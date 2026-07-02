@@ -30,17 +30,19 @@ After establishing a clean dataset, the data was migrated into a relational data
 * **Window Functions for Market Trends:** Utilized `ROW_NUMBER()` window functions to isolate and rank the top 3 best-selling products within every individual retail category.
 * **Promotion & Shipping Analysis:** Modeled the exact operational impact of discount rates on individual items and isolated average order values across standard vs. express shipping channels.
 
-> **SQL Highlight: Customer Cohort Segmentation**
+> **SQL Highlight: Category-Specific Product Ranking Using Window Functions**
 > ```sql
-> WITH CustomerCounts AS (
->     SELECT customer_id, COUNT(transaction_id) as total_orders
->     FROM retail_transactions GROUP BY customer_id
+> WITH item_counts AS (
+>     SELECT category,
+>            item_purchased,
+>            COUNT(customer_id) AS total_orders,
+>            ROW_NUMBER() OVER (PARTITION BY category ORDER BY COUNT(customer_id) DESC) AS item_rank
+>     FROM customer
+>     GROUP BY category, item_purchased
 > )
-> SELECT customer_id,
->        CASE WHEN total_orders > 10 THEN 'Loyal'
->             WHEN total_orders BETWEEN 3 AND 10 THEN 'Returning'
->             ELSE 'New' END AS customer_cohort
-> FROM CustomerCounts;
+> SELECT category, item_purchased, total_orders, item_rank
+> FROM item_counts
+> WHERE item_rank <= 3;
 > ```
 
 ### 3. Executive Business Intelligence Dashboard (Power BI)
