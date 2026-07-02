@@ -1,4 +1,8 @@
-# retail-analytics-dashboard
+# End-to-End Retail Customer Behavior & Data Analytics Pipeline
+
+<img width="1064" height="546" alt="Screenshot 2026-07-02 213202" src="https://github.com/user-attachments/assets/500e108d-e9ae-4075-90a9-d95498e6094e" />
+
+
 ## Project Overview
 This repository contains an end-to-end data analytics project simulating a corporate-level business intelligence workflow. The project transitions from messy, raw retail transaction data to structured database storage, advanced analytical querying, and an executive-level interactive dashboard to uncover driving factors behind consumer purchasing decisions, marketing effectiveness, and brand loyalty.
 
@@ -14,8 +18,8 @@ This repository contains an end-to-end data analytics project simulating a corpo
 ### 1. Data Cleaning & Exploratory Data Analysis (Python)
 * **Structural Assessment:** Handled dataset profiling, evaluated missing data, and managed structural anomalies.
 * **Smart Imputation:** Mitigated data bias by imputing missing product review ratings using the localized median rating within each specific product category rather than an overall global median.
-* **Feature Engineering:** 
-  * Transformed categorical frequencies into numerical day-intervals (`purchase_frequency_days`) to facilitate quantitative statistical models.
+* **Feature Engineering:**   
+  * Transformed categorical frequencies into numerical day-intervals (`purchase_frequency_days`) to facilitate quantitative statistical models.  
   * Segmented raw customer ages into distinct categorical demographic brackets (`age_group`).
 * **Redundancy Elimination:** Identified and dropped perfectly correlated features to optimize dataset dimensionality.
 
@@ -25,6 +29,19 @@ After establishing a clean dataset, the data was migrated into a relational data
 * **Customer Segmentation:** Implemented Common Table Expressions (CTEs) to segment the customer base into `New`, `Returning`, and `Loyal` cohorts based on historical transaction volumes.
 * **Window Functions for Market Trends:** Utilized `ROW_NUMBER()` window functions to isolate and rank the top 3 best-selling products within every individual retail category.
 * **Promotion & Shipping Analysis:** Modeled the exact operational impact of discount rates on individual items and isolated average order values across standard vs. express shipping channels.
+
+> **SQL Highlight: Customer Cohort Segmentation**
+> ```sql
+> WITH CustomerCounts AS (
+>     SELECT customer_id, COUNT(transaction_id) as total_orders
+>     FROM retail_transactions GROUP BY customer_id
+> )
+> SELECT customer_id,
+>        CASE WHEN total_orders > 10 THEN 'Loyal'
+>             WHEN total_orders BETWEEN 3 AND 10 THEN 'Returning'
+>             ELSE 'New' END AS customer_cohort
+> FROM CustomerCounts;
+> ```
 
 ### 3. Executive Business Intelligence Dashboard (Power BI)
 Developed a fully interactive, cross-filtering dashboard focused on primary corporate KPIs:
@@ -42,6 +59,6 @@ Developed a fully interactive, cross-filtering dashboard focused on primary corp
 ---
 
 ## How to Review This Project
-1. **Python Script:** Open `/retail_customer_analysis.ipynb` to view the data pipeline, cleaning execution, and feature engineering.
-2. **SQL Queries:** Review `/analytics_queries.sql` to inspect the analytical engine, CTEs, and window functions used to solve the core business problem statements.
-3. **Interactive Report:** Download the `/Executive_Sales_Dashboard.pbix` file to explore the interactive dashboard layout locally in Power BI Desktop.
+1. **Python Script:** Open [`/retail_customer_analysis.ipynb`](./retail_customer_analysis.ipynb) to view the data pipeline, cleaning execution, and feature engineering.
+2. **SQL Queries:** Review [`/analytics_queries.sql`](./analytics_queries.sql) to inspect the analytical engine, CTEs, and window functions used to solve the core business problem statements.
+3. **Interactive Report:** Download the [`/Executive_Sales_Dashboard.pbix`](./Executive_Sales_Dashboard.pbix) file to explore the interactive dashboard layout locally in Power BI Desktop.
